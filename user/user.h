@@ -2,6 +2,9 @@ struct stat;
 struct rtcdate;
 
 // system calls
+struct sysinfo; //声明sysinfo结构体
+int sysinfo(struct sysinfo *); //声明sysinfo对应函数
+int trace(int);//trace定义
 int fork(void);
 int exit(int) __attribute__((noreturn));
 int wait(int*);

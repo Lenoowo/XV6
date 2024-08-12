@@ -178,7 +178,7 @@ proc_pagetable(struct proc *p)
   if(pagetable == 0)
     return 0;
 
-  // map the trampoline code (for system call return)
+  // map the trampoline code (for system call return)lock
   // at the highest user virtual address.
   // only the supervisor uses it, on the way
   // to/from user space, so not PTE_U.
@@ -313,6 +313,11 @@ fork(void)
 
   acquire(&np->lock);
   np->state = RUNNABLE;
+  release(&np->lock);
+  
+  //trace
+  acquire(&np->lock);
+  np->trace_mask = p->trace_mask;
   release(&np->lock);
 
   return pid;
@@ -654,3 +659,18 @@ procdump(void)
     printf("\n");
   }
 }
+
+uint64
+count_process(void)
+{
+  struct proc *p;
+  uint64 process_num = 0;
+  
+  //循环读所有的进程，并且查看其状态，可用进程就让process_num，然后返回
+  for(p = proc; p < &proc[NPROC]; p++){
+  	if(p->state != UNUSED)
+  	  process_num++;
+  }
+  return process_num;
+}
+
